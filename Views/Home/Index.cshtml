@@ -1,0 +1,141 @@
+@{
+    ViewData["Title"] = "Мнемосхема";
+}
+
+<style>
+    #panel { position: relative; width: 840px; height: 440px; background: #eef4fb; border: 1px solid #dde3ea; overflow: hidden; }
+    #scheme { position: absolute; left: 0; top: 0; }
+    .card { position: absolute; background: #fff; border-radius: 8px; padding: 8px 12px; min-width: 150px; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+    .card .t { font-size: .85rem; color: #444; }
+    .card .v { font-size: 1.4rem; font-weight: 700; }
+    .label { position: absolute; font-size: .9rem; color: #555; }
+    #link { position: absolute; right: 12px; top: 10px; font-size: .85rem; padding: 3px 10px; border-radius: 12px; color: #fff; background: #999; }
+
+    .belt-lines { animation: dash 0.57s linear infinite; }
+    .box { animation: slide 6s linear infinite; }
+    .stopped .belt-lines, .stopped .box { animation-play-state: paused; }
+
+    @@keyframes dash { to { stroke-dashoffset: -40; } }
+    @@keyframes slide { from { transform: translateX(0); } to { transform: translateX(420px); } }
+</style>
+
+<h1>Мнемосхема конвеєра</h1>
+
+<div id="panel">
+    <svg id="scheme" class="stopped" viewBox="0 0 840 440" width="840" height="440">
+        <rect x="0" y="370" width="840" height="70" fill="#9b7b55" />
+
+        <!-- опори -->
+        <g stroke="#555" stroke-width="6">
+            <line x1="300" y1="356" x2="300" y2="370" />
+            <line x1="500" y1="356" x2="500" y2="370" />
+            <line x1="720" y1="356" x2="720" y2="370" />
+        </g>
+
+        <!-- стрічка -->
+        <rect x="250" y="330" width="520" height="26" rx="13" fill="#3d3d3d" />
+        <line class="belt-lines" x1="265" y1="337" x2="755" y2="337" stroke="#f2c230" stroke-width="3" stroke-dasharray="20 20" />
+        <circle cx="263" cy="343" r="17" fill="#777" stroke="#444" stroke-width="3" />
+        <circle cx="757" cy="343" r="17" fill="#777" stroke="#444" stroke-width="3" />
+
+        <!-- привід -->
+        <line x1="230" y1="343" x2="246" y2="343" stroke="#333" stroke-width="5" />
+        <rect id="motor" x="150" y="318" width="80" height="52" rx="6" fill="#999" stroke="#333" stroke-width="3" />
+        <text x="190" y="351" text-anchor="middle" font-size="18" fill="#fff">M</text>
+
+        <!-- вантажі -->
+        <g>
+            <rect class="box" style="animation-delay:0s"  x="270" y="294" width="44" height="36" fill="#c98b3c" stroke="#7a4e17" stroke-width="2" />
+            <rect class="box" style="animation-delay:-2s" x="270" y="294" width="44" height="36" fill="#c98b3c" stroke="#7a4e17" stroke-width="2" />
+            <rect class="box" style="animation-delay:-4s" x="270" y="294" width="44" height="36" fill="#c98b3c" stroke="#7a4e17" stroke-width="2" />
+        </g>
+
+        <!-- датчик вантажу на вході -->
+        <line x1="292" y1="252" x2="292" y2="290" stroke="#888" stroke-dasharray="4 3" />
+        <circle id="cargoLamp" cx="292" cy="244" r="9" fill="#bbb" stroke="#555" />
+    </svg>
+
+    <div class="label" style="left:20px; top:14px;">Вхід</div>
+    <div class="card" style="left:20px; top:40px;"><div class="t">Вантаж на вході</div><div class="v" id="vCargo">—</div></div>
+    <div class="card" style="left:20px; top:130px;"><div class="t">Швидкість стрічки</div><div class="v" id="vSpeed">—</div></div>
+
+    <div class="label" style="left:330px; top:14px;">Привід</div>
+    <div class="card" style="left:330px; top:40px;"><div class="t">Температура приводу</div><div class="v" id="vTemp">—</div></div>
+    <div class="card" style="left:330px; top:130px;"><div class="t">Струм приводу</div><div class="v" id="vCurrent">—</div></div>
+
+    <div class="label" style="left:600px; top:14px;">Стан</div>
+    <div class="card" style="left:600px; top:40px;"><div class="t">Стан конвеєра</div><div class="v" id="vState" style="font-size:1.1rem">—</div></div>
+    <div class="card" style="left:600px; top:130px;"><div class="t">Оброблено вантажів</div><div class="v" id="vTotal">—</div></div>
+
+    <div id="link">зв'язку немає</div>
+</div>
+
+<script>
+    const T = {
+        cargo:   'conveyor/1/sensors/input/cargo',
+        speed:   'conveyor/1/sensors/belt/speed',
+        temp:    'conveyor/1/sensors/motor/temperature',
+        current: 'conveyor/1/sensors/motor/current'
+    };
+
+    const svg = document.getElementById('scheme');
+    const lines = svg.querySelector('.belt-lines');
+    const boxes = svg.querySelectorAll('.box');
+    let lastSpeed = 1;
+
+    function fmt(reading) {
+        return reading ? reading.value.toFixed(2) + ' ' + reading.unit : '—';
+    }
+
+    function setBeltSpeed(speed) {
+        const s = Math.round(speed * 10) / 10;       // округлення, щоб анімація не смикалась від шуму
+        const running = s > 0.05;
+        svg.classList.toggle('stopped', !running);
+        if (running && s !== lastSpeed) {
+            lastSpeed = s;
+            lines.style.animationDuration = (0.57 / s) + 's';
+            boxes.forEach(b => b.style.animationDuration = (6 / s) + 's');
+        }
+    }
+
+    function render(d) {
+        const s = d.sensors || {};
+
+        const cargo = s[T.cargo];
+        document.getElementById('vCargo').textContent = cargo ? (cargo.value > 0 ? 'є' : 'немає') : '—';
+        document.getElementById('cargoLamp').setAttribute('fill', cargo && cargo.value > 0 ? '#4cc24c' : '#bbb');
+
+        document.getElementById('vSpeed').textContent = fmt(s[T.speed]);
+        document.getElementById('vTemp').textContent = fmt(s[T.temp]);
+        document.getElementById('vCurrent').textContent = fmt(s[T.current]);
+        setBeltSpeed(s[T.speed] ? s[T.speed].value : 0);
+
+        const st = d.state;
+        const motor = document.getElementById('motor');
+        if (st) {
+            document.getElementById('vState').textContent = st.state;
+            document.getElementById('vTotal').textContent = st.totalCargo;
+            motor.setAttribute('fill', st.emergency ? '#d9534f' : (st.motorRunning ? '#5cb85c' : '#999'));
+        }
+
+        // зв'язок є, якщо останній стан не старший за 6 секунд
+        const link = document.getElementById('link');
+        const age = st ? (new Date(d.serverTimeUtc) - new Date(st.measuredAtUtc)) / 1000 : Infinity;
+        const ok = age < 6;
+        link.textContent = ok ? 'зв\'язок є' : 'зв\'язку немає';
+        link.style.background = ok ? '#4cae4c' : '#999';
+        if (!ok) setBeltSpeed(0);
+    }
+
+    async function refresh() {
+        try {
+            const r = await fetch('/Home/Data');
+            render(await r.json());
+        } catch (e) {
+            document.getElementById('link').textContent = 'зв\'язку немає';
+        }
+    }
+
+    refresh();
+    setInterval(refresh, 1000);
+</script>

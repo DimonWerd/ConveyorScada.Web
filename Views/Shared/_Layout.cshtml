@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ConveyorScada.Web</title>
+    <style>
+        body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: #212529; }
+        header { display: flex; align-items: center; gap: 24px; padding: 12px 16px; border-bottom: 1px solid #dee2e6; }
+        header a { color: #555; text-decoration: none; }
+        .brand { font-size: 1.25rem; color: #333; }
+        main { padding: 0 16px 24px; }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="brand">ConveyorScada.Web</span>
+        <a href="/">Home</a>
+    </header>
+    <main>
+        @RenderBody()
+    </main>
+</body>
+</html>
