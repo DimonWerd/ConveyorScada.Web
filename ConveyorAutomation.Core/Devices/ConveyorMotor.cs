@@ -1,4 +1,4 @@
-namespace ConveyorAutomation;
+namespace ConveyorAutomation.Devices;
 
 /// <summary>Привід (електродвигун) стрічки конвеєра.</summary>
 public class ConveyorMotor

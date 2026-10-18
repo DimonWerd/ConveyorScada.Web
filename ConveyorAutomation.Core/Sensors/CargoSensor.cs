@@ -1,4 +1,4 @@
-namespace ConveyorAutomation;
+namespace ConveyorAutomation.Sensors;
 
 /// <summary>Датчик наявності вантажу на вхідній ділянці стрічки.</summary>
 public class CargoSensor : Sensor

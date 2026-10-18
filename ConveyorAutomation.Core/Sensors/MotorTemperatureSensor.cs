@@ -1,4 +1,6 @@
-namespace ConveyorAutomation;
+using ConveyorAutomation.Devices;
+
+namespace ConveyorAutomation.Sensors;
 
 /// <summary>Датчик температури приводу: нагрівається під навантаженням і остигає після зупинки.</summary>
 public class MotorTemperatureSensor : Sensor

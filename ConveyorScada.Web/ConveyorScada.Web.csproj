@@ -10,4 +10,8 @@
     <PackageReference Include="MQTTnet" Version="5.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ConveyorAutomation.Core\ConveyorAutomation.Core.csproj" />
+  </ItemGroup>
+
 </Project>

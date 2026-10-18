@@ -1,4 +1,4 @@
-namespace ConveyorAutomation;
+namespace ConveyorAutomation.Sensors;
 
 /// <summary>Базовий клас для всіх сенсорів конвеєра.</summary>
 public abstract class Sensor

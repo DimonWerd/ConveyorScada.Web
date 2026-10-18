@@ -1,4 +1,6 @@
-namespace ConveyorAutomation;
+using ConveyorAutomation.Devices;
+
+namespace ConveyorAutomation.Sensors;
 
 /// <summary>Датчик швидкості руху стрічки (з невеликим шумом вимірювання).</summary>
 public class SpeedSensor : Sensor

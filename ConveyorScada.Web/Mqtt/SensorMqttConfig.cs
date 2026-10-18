@@ -1,3 +1,5 @@
+using ConveyorAutomation.Sensors;
+
 namespace ConveyorAutomation.Mqtt;
 
 /// <summary>Зв'язує об'єкт сенсора з MQTT-темою та одиницею вимірювання.</summary>

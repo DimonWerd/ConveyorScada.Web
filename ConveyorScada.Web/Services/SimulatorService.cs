@@ -1,4 +1,6 @@
-using ConveyorAutomation;
+using ConveyorAutomation.Devices;
+using ConveyorAutomation.Sensors;
+using ConveyorAutomation.Systems;
 using ConveyorAutomation.Mqtt;
 
 namespace ConveyorScada.Web.Services

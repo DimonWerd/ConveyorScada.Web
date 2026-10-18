@@ -1,4 +1,7 @@
-namespace ConveyorAutomation;
+using ConveyorAutomation.Devices;
+using ConveyorAutomation.Sensors;
+
+namespace ConveyorAutomation.Systems;
 
 /// <summary>Система керування конвеєром: об'єднує сенсори та привід і реалізує логіку керування.</summary>
 public class ConveyorSystem

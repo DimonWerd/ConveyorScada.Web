@@ -1,6 +1,4 @@
-# Build output
-**/bin/
-**/obj/
-
-# Visual Studio
+bin/
+obj/
 .vs/
+*.user

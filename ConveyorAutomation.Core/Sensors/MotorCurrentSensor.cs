@@ -1,4 +1,6 @@
-namespace ConveyorAutomation;
+using ConveyorAutomation.Devices;
+
+namespace ConveyorAutomation.Sensors;
 
 /// <summary>Датчик струму приводу: струм зростає зі швидкістю стрічки.</summary>
 public class MotorCurrentSensor : Sensor
