@@ -4,8 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<LiveValuesCache>();
-builder.Services.AddHostedService<MqttListener>();      // підписник: MQTT -> кеш -> сторінка
-builder.Services.AddHostedService<SimulatorService>();  // симулятор: сенсори -> MQTT
+builder.Services.AddHostedService<MqttListener>();   // підписник: MQTT -> кеш -> сторінка
 
 var app = builder.Build();
 

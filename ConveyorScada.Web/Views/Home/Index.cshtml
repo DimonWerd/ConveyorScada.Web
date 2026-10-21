@@ -1,3 +1,4 @@
+@using ConveyorAutomation.Telemetry
 @{
     ViewData["Title"] = "Мнемосхема";
 }
@@ -5,9 +6,10 @@
 <style>
     #panel { position: relative; width: 840px; height: 440px; background: #eef4fb; border: 1px solid #dde3ea; overflow: hidden; }
     #scheme { position: absolute; left: 0; top: 0; }
-    .card { position: absolute; background: #fff; border-radius: 8px; padding: 8px 12px; min-width: 150px; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+    .card { position: absolute; background: #fff; border-radius: 8px; padding: 8px 12px; width: 240px; box-sizing: border-box; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
     .card .t { font-size: .85rem; color: #444; }
     .card .v { font-size: 1.4rem; font-weight: 700; }
+    .card .topic { font-size: .68rem; color: #888; margin-top: 2px; word-break: break-all; }
     .label { position: absolute; font-size: .9rem; color: #555; }
     #link { position: absolute; right: 12px; top: 10px; font-size: .85rem; padding: 3px 10px; border-radius: 12px; color: #fff; background: #999; }
 
@@ -55,27 +57,27 @@
         <circle id="cargoLamp" cx="292" cy="244" r="9" fill="#bbb" stroke="#555" />
     </svg>
 
-    <div class="label" style="left:20px; top:14px;">Вхід</div>
-    <div class="card" style="left:20px; top:40px;"><div class="t">Вантаж на вході</div><div class="v" id="vCargo">—</div></div>
-    <div class="card" style="left:20px; top:130px;"><div class="t">Швидкість стрічки</div><div class="v" id="vSpeed">—</div></div>
+    <div class="label" style="left:14px; top:14px;">Вхід</div>
+    <div class="card" style="left:14px; top:40px;"><div class="t">Вантаж на вході</div><div class="v" id="vCargo">—</div><div class="topic">@ConveyorTopics.InputCargo</div></div>
+    <div class="card" style="left:14px; top:138px;"><div class="t">Швидкість стрічки</div><div class="v" id="vSpeed">—</div><div class="topic">@ConveyorTopics.BeltSpeed</div></div>
 
-    <div class="label" style="left:330px; top:14px;">Привід</div>
-    <div class="card" style="left:330px; top:40px;"><div class="t">Температура приводу</div><div class="v" id="vTemp">—</div></div>
-    <div class="card" style="left:330px; top:130px;"><div class="t">Струм приводу</div><div class="v" id="vCurrent">—</div></div>
+    <div class="label" style="left:292px; top:14px;">Привід</div>
+    <div class="card" style="left:292px; top:40px;"><div class="t">Температура приводу</div><div class="v" id="vTemp">—</div><div class="topic">@ConveyorTopics.MotorTemperature</div></div>
+    <div class="card" style="left:292px; top:138px;"><div class="t">Струм приводу</div><div class="v" id="vCurrent">—</div><div class="topic">@ConveyorTopics.MotorCurrent</div></div>
 
-    <div class="label" style="left:600px; top:14px;">Стан</div>
-    <div class="card" style="left:600px; top:40px;"><div class="t">Стан конвеєра</div><div class="v" id="vState" style="font-size:1.1rem">—</div></div>
-    <div class="card" style="left:600px; top:130px;"><div class="t">Оброблено вантажів</div><div class="v" id="vTotal">—</div></div>
+    <div class="label" style="left:570px; top:14px;">Стан</div>
+    <div class="card" style="left:570px; top:40px;"><div class="t">Стан конвеєра</div><div class="v" id="vState" style="font-size:1.1rem">—</div><div class="topic">@ConveyorTopics.State</div></div>
+    <div class="card" style="left:570px; top:138px;"><div class="t">Оброблено вантажів</div><div class="v" id="vTotal">—</div><div class="topic">@ConveyorTopics.State (totalCargo)</div></div>
 
     <div id="link">зв'язку немає</div>
 </div>
 
 <script>
     const T = {
-        cargo:   'conveyor/1/sensors/input/cargo',
-        speed:   'conveyor/1/sensors/belt/speed',
-        temp:    'conveyor/1/sensors/motor/temperature',
-        current: 'conveyor/1/sensors/motor/current'
+        cargo:   '@ConveyorTopics.InputCargo',
+        speed:   '@ConveyorTopics.BeltSpeed',
+        temp:    '@ConveyorTopics.MotorTemperature',
+        current: '@ConveyorTopics.MotorCurrent'
     };
 
     const svg = document.getElementById('scheme');
