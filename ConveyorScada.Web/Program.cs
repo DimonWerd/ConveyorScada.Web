@@ -8,6 +8,7 @@ builder.Services.AddHostedService<MqttListener>();   // підписник: MQTT
 
 var app = builder.Build();
 
+app.UseStaticFiles();   // віддає wwwroot (css/site.css)
 app.UseRouting();
 app.MapControllerRoute(
     name: "default",

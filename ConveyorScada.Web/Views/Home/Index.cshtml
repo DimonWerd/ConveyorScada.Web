@@ -1,28 +1,16 @@
 @using ConveyorAutomation.Telemetry
 @{
     ViewData["Title"] = "Мнемосхема";
+    var uk = new System.Globalization.CultureInfo("uk-UA");
+    DateTime today = DateTime.Today;
+    DateTime first = new DateTime(today.Year, today.Month, 1);
+    int offset = ((int)first.DayOfWeek + 6) % 7;   // початок тижня - понеділок
+    int days = DateTime.DaysInMonth(today.Year, today.Month);
 }
-
-<style>
-    #panel { position: relative; width: 840px; height: 440px; background: #eef4fb; border: 1px solid #dde3ea; overflow: hidden; }
-    #scheme { position: absolute; left: 0; top: 0; }
-    .card { position: absolute; background: #fff; border-radius: 8px; padding: 8px 12px; width: 240px; box-sizing: border-box; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
-    .card .t { font-size: .85rem; color: #444; }
-    .card .v { font-size: 1.4rem; font-weight: 700; }
-    .card .topic { font-size: .68rem; color: #888; margin-top: 2px; word-break: break-all; }
-    .label { position: absolute; font-size: .9rem; color: #555; }
-    #link { position: absolute; right: 12px; top: 10px; font-size: .85rem; padding: 3px 10px; border-radius: 12px; color: #fff; background: #999; }
-
-    .belt-lines { animation: dash 0.57s linear infinite; }
-    .box { animation: slide 6s linear infinite; }
-    .stopped .belt-lines, .stopped .box { animation-play-state: paused; }
-
-    @@keyframes dash { to { stroke-dashoffset: -40; } }
-    @@keyframes slide { from { transform: translateX(0); } to { transform: translateX(420px); } }
-</style>
 
 <h1>Мнемосхема конвеєра</h1>
 
+<div class="scada-page">
 <div id="panel">
     <svg id="scheme" class="stopped" viewBox="0 0 840 440" width="840" height="440">
         <rect x="0" y="370" width="840" height="70" fill="#9b7b55" />
@@ -70,6 +58,30 @@
     <div class="card" style="left:570px; top:138px;"><div class="t">Оброблено вантажів</div><div class="v" id="vTotal">—</div><div class="topic">@ConveyorTopics.State (totalCargo)</div></div>
 
     <div id="link">зв'язку немає</div>
+</div>
+
+<table class="cal">
+    <caption>@uk.TextInfo.ToTitleCase(today.ToString("MMMM yyyy", uk))</caption>
+    <tr>
+        <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Нд</th>
+    </tr>
+    <tr>
+        @for (int i = 0; i < offset; i++)
+        {
+            <td></td>
+        }
+        @for (int d = 1; d <= days; d++)
+        {
+            bool isWeekend = (offset + d - 1) % 7 >= 5;
+            string css = d == today.Day ? "today" : (isWeekend ? "weekend" : "");
+            <td class="@css">@d</td>
+            if ((offset + d) % 7 == 0 && d < days)
+            {
+                @:</tr><tr>
+            }
+        }
+    </tr>
+</table>
 </div>
 
 <script>
